@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prescriptions — MediCore</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="prescription">
+
+<nav class="navbar">
+  <div class="container">
+    <a href="index_1.html" class="brand"><svg viewBox="0 0 24 24"><path d="M2 12h4l2-7 4 14 3-10 2 3h5"/></svg> MediCore</a>
+    <button class="nav-toggle" onclick="toggleNav()">&#9776;</button>
+    <div class="nav-links"></div>
+    <div class="nav-cta">
+      <span class="badge badge-ok" style="align-self:center">Patient: <span class="patient-name-placeholder">Priya Sharma</span></span>
+      <a href="LogoutServlet" class="btn btn-outline btn-sm">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<div class="dash">
+  <aside class="sidebar">
+    <h3>Patient menu</h3>
+    <a href="patient-dashboard.html">Dashboard</a>
+    <a href="appointment.html">Appointments</a>
+    <a href="medical-history.html">Medical History</a>
+    <a href="prescription.html" class="active">Prescriptions</a>
+    <a href="pharmacy.html">Pharmacy</a>
+    <a href="lab-test.html">Lab Tests</a>
+    <a href="emergency.html">Emergency</a>
+    <a href="feedback.html">Feedback</a>
+    <h3>Account</h3>
+    <a href="LogoutServlet">Logout</a>
+  </aside>
+
+  <main class="dash-main">
+    <h1>Your prescriptions</h1>
+    <p>Active and past prescriptions from your doctors. Order refills directly from the pharmacy.</p>
+
+    <div class="card card-pad">
+      <table>
+        <tr><th>Medicine</th><th>Dosage</th><th>Status</th></tr>
+        <tbody id="rxRows">
+          <tr><td colspan="3">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script>
+  fetch('PatientInfoServlet')
+    .then(r => r.text())
+    .then(name => {
+      document.querySelectorAll('.patient-name-placeholder').forEach(el => el.textContent = name);
+    });
+
+  fetch('MyPrescriptionsServlet')
+    .then(r => r.text())
+    .then(html => { document.getElementById('rxRows').innerHTML = html; });
+</script>
+<script src="script.js"></script>
+</body>
+</html>

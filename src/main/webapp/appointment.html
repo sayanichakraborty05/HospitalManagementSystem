@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Appointment — MediCore</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="appointment">
+
+<nav class="navbar">
+  <div class="container">
+    <a href="index_1.html" class="brand">
+      <svg viewBox="0 0 24 24">
+        <path d="M2 12h4l2-7 4 14 3-10 2 3h5"/>
+      </svg>
+      MediCore
+    </a>
+
+    <button class="nav-toggle" onclick="toggleNav()">&#9776;</button>
+
+    <div class="nav-links"></div>
+
+    <div class="nav-cta">
+      <span class="badge badge-ok" style="align-self:center">
+        Patient:
+        <span class="patient-name-placeholder">Guest</span>
+      </span>
+
+      <a href="LogoutServlet" class="btn btn-outline btn-sm">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<div class="dash">
+
+<aside class="sidebar">
+
+<h3>Patient menu</h3>
+
+<a href="patient-dashboard.html">Dashboard</a>
+<a href="appointment.html" class="active">Appointments</a>
+<a href="medical-history.html">Medical History</a>
+<a href="prescription.html">Prescriptions</a>
+<a href="pharmacy.html">Pharmacy</a>
+<a href="lab-test.html">Lab Tests</a>
+<a href="emergency.html">Emergency</a>
+<a href="feedback.html">Feedback</a>
+
+<h3>Account</h3>
+
+<a href="LogoutServlet">Logout</a>
+
+</aside>
+
+<main class="dash-main">
+
+<h1>Book an appointment</h1>
+
+<p>
+Pick a department and doctor —
+we'll confirm the slot by email/SMS once notifications are wired up.
+</p>
+
+<div class="grid-2">
+
+<div class="card card-pad">
+
+<h3>Approved Doctors</h3>
+
+<table>
+
+<tr>
+<th>Doctor</th>
+<th>Department</th>
+</tr>
+
+<tbody id="doctorListRows">
+
+<tr>
+
+<td colspan="2">
+
+Loading...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<form id="apptForm"
+class="card card-pad"
+action="AppointmentServlet"
+method="POST">
+
+<h3>New Appointment</h3>
+
+<div class="alert alert-info js-form-msg"
+style="display:none"></div>
+
+<div class="form-group">
+
+<label>Patient Name</label>
+
+<input
+type="text"
+name="patientName"
+id="patient"
+required>
+
+</div>
+
+<div class="form-group">
+
+<label>Department</label>
+
+<select
+name="department"
+id="dept"
+required>
+
+<option>Cardiology</option>
+<option>Orthopedics</option>
+<option>Pediatrics</option>
+<option>General Medicine</option>
+<option>Dermatology</option>
+<option>Neurology</option>
+<option>ENT</option>
+<option>Gynecology</option>
+<option>Psychiatry</option>
+<option>Gastroenterology</option>
+<option>Ophthalmology</option>
+<option>Urology</option>
+<option>Dentistry</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>Preferred Doctor</label>
+
+<select
+id="doctor"
+name="doctor">
+
+<option value="">Any available</option>
+
+</select>
+
+</div>
+
+<div class="form-row">
+
+<div class="form-group">
+
+<label>Date</label>
+
+<input
+type="date"
+name="date"
+id="date"
+required>
+
+</div>
+
+<div class="form-group">
+
+<label>Time</label>
+
+<input
+type="time"
+name="time"
+id="time"
+required>
+
+</div>
+
+</div>
+
+<div class="form-group">
+
+<label>Reason</label>
+
+<textarea
+id="reason"
+name="reason"
+rows="3"></textarea>
+
+</div>
+
+<button
+class="btn btn-primary btn-block"
+type="submit">
+
+Confirm Appointment
+
+</button>
+
+</form>
+
+</div>
+
+</main>
+
+</div>
+
+<script src="script.js"></script>
+
+<script>
+
+let allDoctors=[];
+
+fetch("DoctorListServlet")
+
+.then(response=>{
+
+if(!response.ok){
+
+throw new Error();
+
+}
+
+return response.text();
+
+})
+
+.then(text=>{
+
+allDoctors=text
+.trim()
+.split("\n")
+.filter(line=>line.trim()!=="")
+.map(line=>{
+
+const parts=line.split("|");
+
+return{
+
+department:parts[0].trim(),
+
+name:parts[1].trim()
+
+};
+
+});
+
+updateDoctorOptions();
+
+renderDoctorTable();
+
+})
+
+.catch(()=>{
+
+document.getElementById("doctorListRows").innerHTML=
+"<tr><td colspan='2'>Unable to load doctors.</td></tr>";
+
+});
+function renderDoctorTable(){
+
+const tbody=document.getElementById("doctorListRows");
+
+if(allDoctors.length===0){
+
+tbody.innerHTML=
+"<tr><td colspan='2'>No approved doctors found.</td></tr>";
+
+return;
+
+}
+
+tbody.innerHTML="";
+
+allDoctors.forEach(function(doc){
+
+tbody.innerHTML+=`
+<tr>
+<td>${doc.name}</td>
+<td>${doc.department}</td>
+</tr>
+`;
+
+});
+
+}
+
+function updateDoctorOptions(){
+
+const dept=document.getElementById("dept").value.trim().toLowerCase();
+
+const doctorSelect=document.getElementById("doctor");
+
+doctorSelect.innerHTML=
+'<option value="">Any available</option>';
+
+allDoctors
+.filter(doc=>doc.department.trim().toLowerCase()===dept)
+.forEach(function(doc){
+
+doctorSelect.innerHTML+=
+`<option value="${doc.name}">
+${doc.name}
+</option>`;
+
+});
+
+}
+
+document
+.getElementById("dept")
+.addEventListener("change",updateDoctorOptions);
+
+fetch("PatientInfoServlet")
+
+.then(r=>r.text())
+
+.then(name=>{
+
+document
+.querySelectorAll(".patient-name-placeholder")
+.forEach(el=>el.textContent=name);
+
+});
+
+</script>
+</body>
+</html>

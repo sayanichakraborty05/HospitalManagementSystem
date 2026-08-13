@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Tests — MediCore</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body data-page="lab-test">
+
+<nav class="navbar">
+<div class="container">
+
+<a href="index_1.html" class="brand">
+<svg viewBox="0 0 24 24">
+<path d="M2 12h4l2-7 4 14 3-10 2 3h5"/>
+</svg>
+MediCore
+</a>
+
+<button class="nav-toggle" onclick="toggleNav()">&#9776;</button>
+
+<div class="nav-links"></div>
+
+<div class="nav-cta">
+
+<span class="badge badge-ok" style="align-self:center">
+Patient :
+<span class="patient-name-placeholder">Guest</span>
+</span>
+
+<a href="LogoutServlet" class="btn btn-outline btn-sm">
+Logout
+</a>
+
+</div>
+
+</div>
+</nav>
+
+<div class="dash">
+
+<aside class="sidebar">
+
+<h3>Patient Menu</h3>
+
+<a href="patient-dashboard.html">Dashboard</a>
+
+<a href="appointment.html">Appointments</a>
+
+<a href="medical-history.html">Medical History</a>
+
+<a href="prescription.html">Prescriptions</a>
+
+<a href="pharmacy.html">Pharmacy</a>
+
+<a href="lab-test.html" class="active">Lab Tests</a>
+
+<a href="emergency.html">Emergency</a>
+
+<a href="feedback.html">Feedback</a>
+
+<h3>Account</h3>
+
+<a href="LogoutServlet">Logout</a>
+
+</aside>
+
+<main class="dash-main">
+
+<h1>Book a Lab Test</h1>
+
+<p>
+Choose tests below — a technician will confirm your booking.
+</p>
+
+<div class="grid-2">
+
+<div class="card card-pad">
+
+<h3>Available Tests</h3>
+
+<table id="testTable">
+
+<tr>
+<th></th>
+<th>Test</th>
+<th>Price</th>
+</tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="Complete Blood Count (CBC)" data-price="300"></td><td>Complete Blood Count (CBC)</td><td class="mono">₹300</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="Lipid Profile" data-price="600"></td><td>Lipid Profile</td><td class="mono">₹600</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="Thyroid Panel (T3, T4, TSH)" data-price="450"></td><td>Thyroid Panel (T3, T4, TSH)</td><td class="mono">₹450</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="Blood Sugar (Fasting)" data-price="150"></td><td>Blood Sugar (Fasting)</td><td class="mono">₹150</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="HbA1c" data-price="500"></td><td>HbA1c</td><td class="mono">₹500</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="Liver Function Test (LFT)" data-price="700"></td><td>Liver Function Test (LFT)</td><td class="mono">₹700</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="Kidney Function Test (KFT)" data-price="700"></td><td>Kidney Function Test (KFT)</td><td class="mono">₹700</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="Vitamin D Test" data-price="900"></td><td>Vitamin D Test</td><td class="mono">₹900</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="Vitamin B12 Test" data-price="800"></td><td>Vitamin B12 Test</td><td class="mono">₹800</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="Urine Routine & Microscopy" data-price="200"></td><td>Urine Routine &amp; Microscopy</td><td class="mono">₹200</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="COVID-19 RT-PCR" data-price="600"></td><td>COVID-19 RT-PCR</td><td class="mono">₹600</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="ECG (Heart Screening)" data-price="350"></td><td>ECG (Heart Screening)</td><td class="mono">₹350</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="Chest X-Ray" data-price="500"></td><td>Chest X-Ray</td><td class="mono">₹500</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="Ultrasound - Whole Abdomen" data-price="1200"></td><td>Ultrasound - Whole Abdomen</td><td class="mono">₹1200</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="MRI - Brain" data-price="4500"></td><td>MRI - Brain</td><td class="mono">₹4500</td></tr>
+      <tr><td><input type="checkbox" form="labForm" name="tests" value="Full Body Checkup Package" data-price="2500"></td><td>Full Body Checkup Package</td><td class="mono">₹2500</td></tr>
+
+</table>
+
+<p class="form-hint">
+Total Selected :
+<span id="testTotal" class="mono">₹0</span>
+</p>
+
+</div>
+
+<form id="labForm" class="card card-pad" action="LabTestServlet" method="POST">
+
+<h3>Booking Details</h3>
+
+<div class="alert alert-info js-form-msg" style="display:none"></div>
+
+<div class="form-group">
+<label>Patient Name</label>
+<input id="name" name="name" type="text" required>
+</div>
+
+<div class="form-row">
+
+<div class="form-group">
+<label>Preferred Date</label>
+<input id="date" name="date" type="date" required>
+</div>
+
+<div class="form-group">
+<label>Mode</label>
+<select id="mode" name="mode">
+<option>Home sample collection</option>
+<option>Walk-in at lab</option>
+</select>
+</div>
+
+</div>
+
+<div class="form-group">
+<label>Address</label>
+<textarea id="address" name="address" rows="2"></textarea>
+</div>
+
+<button type="submit" class="btn btn-primary btn-block">
+Book Test
+</button>
+
+</form>
+
+</div>
+
+</main>
+
+</div>
+
+<script src="script.js"></script>
+
+<script>
+
+const boxes=document.querySelectorAll('#testTable input[type=checkbox]');
+const total=document.getElementById("testTotal");
+
+boxes.forEach(box=>{
+
+box.addEventListener("change",()=>{
+
+let sum=0;
+
+boxes.forEach(b=>{
+if(b.checked){
+sum+=Number(b.dataset.price);
+}
+});
+
+total.textContent="₹"+sum;
+
+});
+
+});
+
+fetch("PatientInfoServlet")
+.then(r=>r.text())
+.then(name=>{
+
+document.querySelectorAll(".patient-name-placeholder")
+.forEach(el=>el.textContent=name);
+
+document.getElementById("name").value=name;
+
+})
+.catch(()=>{
+
+document.querySelectorAll(".patient-name-placeholder")
+.forEach(el=>el.textContent="Guest");
+
+});
+
+</script>
+
+</body>
+</html>

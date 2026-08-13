@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback — MediCore</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body data-page="feedback">
+
+<nav class="navbar">
+<div class="container">
+
+<a href="index_1.html" class="brand">
+<svg viewBox="0 0 24 24">
+<path d="M2 12h4l2-7 4 14 3-10 2 3h5"/>
+</svg>
+MediCore
+</a>
+
+<button class="nav-toggle" onclick="toggleNav()">
+&#9776;
+</button>
+
+<div class="nav-links"></div>
+
+<div class="nav-cta">
+
+<span class="badge badge-ok" style="align-self:center">
+Patient :
+<span class="patient-name-placeholder">Guest</span>
+</span>
+
+<a href="LogoutServlet" class="btn btn-outline btn-sm">
+Logout
+</a>
+
+</div>
+
+</div>
+</nav>
+
+<div class="dash">
+
+<aside class="sidebar">
+
+<h3>Patient Menu</h3>
+
+<a href="patient-dashboard.html">Dashboard</a>
+
+<a href="appointment.html">Appointments</a>
+
+<a href="medical-history.html">Medical History</a>
+
+<a href="prescription.html">Prescriptions</a>
+
+<a href="pharmacy.html">Pharmacy</a>
+
+<a href="lab-test.html">Lab Tests</a>
+
+<a href="emergency.html">Emergency</a>
+
+<a href="feedback.html" class="active">Feedback</a>
+
+<h3>Account</h3>
+
+<a href="LogoutServlet">Logout</a>
+
+</aside>
+
+<main class="dash-main">
+
+<form
+id="feedbackForm"
+class="card form-card"
+action="FeedbackServlet"
+method="POST">
+
+<h2>Share your Feedback</h2>
+
+<p class="form-hint" style="margin-bottom:18px">
+Help us improve — tell us about your visit.
+</p>
+
+<div class="alert alert-info js-form-msg"
+style="display:none"></div>
+
+<div class="form-group">
+
+<label for="name">Name</label>
+
+<input
+id="name"
+name="name"
+type="text"
+required>
+
+</div>
+
+<div class="form-group">
+
+<label for="dept">
+Department Visited
+</label>
+
+<input
+id="dept"
+name="department"
+type="text">
+
+</div>
+
+<div class="form-group">
+
+<label for="rating">
+Overall Rating
+</label>
+
+<select
+id="rating"
+name="rating"
+required>
+
+<option value="5">
+★★★★★ Excellent
+</option>
+
+<option value="4">
+★★★★ Good
+</option>
+
+<option value="3">
+★★★ Average
+</option>
+
+<option value="2">
+★★ Poor
+</option>
+
+<option value="1">
+★ Very Poor
+</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label for="comments">
+Comments
+</label>
+
+<textarea
+id="comments"
+name="comments"
+rows="4"></textarea>
+
+</div>
+
+<button
+type="submit"
+class="btn btn-primary btn-block">
+
+Submit Feedback
+
+</button>
+
+</form>
+
+</main>
+
+</div>
+
+<script src="script.js"></script>
+
+<script>
+
+fetch("PatientInfoServlet")
+
+.then(response=>{
+
+if(!response.ok){
+
+throw new Error();
+
+}
+
+return response.text();
+
+})
+
+.then(name=>{
+
+document
+.querySelectorAll(".patient-name-placeholder")
+.forEach(function(el){
+
+el.textContent=name;
+
+});
+
+})
+.catch(()=>{
+
+document
+.querySelectorAll(".patient-name-placeholder")
+.forEach(function(el){
+
+el.textContent="Guest";
+
+});
+
+});
+
+</script>
+
+</body>
+
+</html>

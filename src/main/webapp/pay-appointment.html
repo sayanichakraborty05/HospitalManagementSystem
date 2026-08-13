@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pay for Appointment — MediCore</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="pay-appointment">
+
+<nav class="navbar">
+  <div class="container">
+    <a href="index_1.html" class="brand">
+      <svg viewBox="0 0 24 24">
+        <path d="M2 12h4l2-7 4 14 3-10 2 3h5"/>
+      </svg>
+      MediCore
+    </a>
+
+    <button class="nav-toggle" onclick="toggleNav()">&#9776;</button>
+
+    <div class="nav-links"></div>
+
+    <div class="nav-cta">
+      <span class="badge badge-ok" style="align-self:center">
+        Patient:
+        <span class="patient-name-placeholder">Guest</span>
+      </span>
+
+      <!-- Fixed -->
+      <a href="LogoutServlet" class="btn btn-outline btn-sm">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<div class="dash">
+
+  <aside class="sidebar">
+    <h3>Patient menu</h3>
+
+    <a href="patient-dashboard.html" class="active">Dashboard</a>
+    <a href="appointment.html">Appointments</a>
+    <a href="medical-history.html">Medical History</a>
+    <a href="prescription.html">Prescriptions</a>
+    <a href="pharmacy.html">Pharmacy</a>
+    <a href="lab-test.html">Lab Tests</a>
+    <a href="emergency.html">Emergency</a>
+    <a href="feedback.html">Feedback</a>
+
+    <h3>Account</h3>
+    <a href="LogoutServlet">Logout</a>
+  </aside>
+
+  <main class="dash-main">
+
+    <h1>Pay consultation fee</h1>
+
+    <div id="apptSummary" class="card card-pad" style="max-width:480px">
+      <p class="form-hint">Loading appointment details...</p>
+    </div>
+
+    <form id="payForm" class="card card-pad" style="max-width:480px;margin-top:20px">
+
+      <h3>Payment method</h3>
+
+      <div class="form-group">
+
+        <div style="display:flex;gap:18px;flex-wrap:wrap">
+
+          <label style="display:flex;align-items:center;gap:6px;font-weight:400;color:var(--ink)">
+            <input type="radio"
+                   name="paymentMethod"
+                   value="cash"
+                   checked
+                   onchange="setPaymentMethod(this.value)">
+            Cash at hospital
+          </label>
+
+          <label style="display:flex;align-items:center;gap:6px;font-weight:400;color:var(--ink)">
+            <input type="radio"
+                   name="paymentMethod"
+                   value="upi"
+                   onchange="setPaymentMethod(this.value)">
+            UPI
+          </label>
+
+          <label style="display:flex;align-items:center;gap:6px;font-weight:400;color:var(--ink)">
+            <input type="radio"
+                   name="paymentMethod"
+                   value="card"
+                   onchange="setPaymentMethod(this.value)">
+            Card
+          </label>
+
+        </div>
+
+        <div id="upiSection" style="display:none;margin-top:10px">
+          <label for="upiId">UPI ID</label>
+          <input id="upiId"
+                 type="text"
+                 placeholder="yourname@upi">
+        </div>
+
+        <div id="cardSection" style="display:none;margin-top:10px">
+
+          <label for="cardNumber">Card number</label>
+
+          <input id="cardNumber"
+                 type="text"
+                 maxlength="19"
+                 placeholder="1234 5678 9012 3456">
+
+          <div class="form-row" style="margin-top:8px">
+
+            <div class="form-group">
+              <label for="cardExpiry">Expiry</label>
+              <input id="cardExpiry"
+                     type="text"
+                     maxlength="5"
+                     placeholder="MM/YY">
+            </div>
+
+            <div class="form-group">
+              <label for="cardCvv">CVV</label>
+              <input id="cardCvv"
+                     type="text"
+                     maxlength="3"
+                     placeholder="123">
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <button type="button"
+              class="btn btn-gold btn-block"
+              onclick="submitPayment()">
+        Pay now
+      </button>
+
+    </form>
+
+    <div id="billPanel"
+         class="card card-pad"
+         style="max-width:480px;margin-top:20px;display:none">
+    </div>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+const apptId = params.get('apptId');
+
+if (!apptId) {
+
+    document.getElementById('apptSummary').innerHTML =
+        "<p>No appointment specified.</p>";
+
+} else {
+
+    fetch('AppointmentDetailsServlet?apptId=' + apptId)
+    .then(r => r.text())
+    .then(html => {
+        document.getElementById('apptSummary').innerHTML = html;
+    })
+    .catch(() => {
+        document.getElementById('apptSummary').innerHTML =
+            "<p>Unable to load appointment.</p>";
+    });
+
+}
+
+function setPaymentMethod(method){
+
+    document.getElementById('upiSection').style.display =
+        method === 'upi' ? 'block' : 'none';
+
+    document.getElementById('cardSection').style.display =
+        method === 'card' ? 'block' : 'none';
+}
+
+function submitPayment(){
+
+    const paymentMethod =
+        document.querySelector('input[name=paymentMethod]:checked').value;
+
+    if(paymentMethod === 'upi'){
+
+        const upiId =
+            document.getElementById('upiId').value.trim();
+
+        if(!upiId.includes('@')){
+            alert('Enter a valid UPI ID.');
+            return;
+        }
+    }
+
+    if(paymentMethod === 'card'){
+
+        const cardNumber =
+            document.getElementById('cardNumber').value.replace(/\s/g,'');
+
+        const cardExpiry =
+            document.getElementById('cardExpiry').value.trim();
+
+        const cardCvv =
+            document.getElementById('cardCvv').value.trim();
+
+        if(cardNumber.length < 12 ||
+           !cardExpiry.includes('/') ||
+           cardCvv.length < 3){
+
+            alert('Enter valid card details.');
+            return;
+        }
+    }
+        function finalize(){
+
+        const params2 = new URLSearchParams();
+
+        params2.set('apptId', apptId);
+        params2.set('paymentMethod', paymentMethod);
+
+        fetch('PayAppointmentServlet', {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+
+            body: params2.toString()
+
+        })
+        .then(r => r.text())
+        .then(billToken => {
+
+            document.getElementById('payForm').style.display = 'none';
+
+            const panel = document.getElementById('billPanel');
+
+            panel.style.display = 'block';
+
+            panel.innerHTML =
+                "<h3>Payment successful!</h3>" +
+                "<p>Your bill token:</p>" +
+                "<p class='mono' style='font-size:1.4rem;color:var(--teal-900)'>" +
+                billToken +
+                "</p>" +
+                "<p class='form-hint'>Show this token at the hospital reception for your visit.</p>" +
+                "<a href='patient-dashboard.html' class='btn btn-primary' style='margin-top:10px'>Back to dashboard</a>";
+
+        })
+        .catch(() => {
+            alert("Payment failed. Please try again.");
+        });
+
+    }
+
+    if(paymentMethod === 'cash'){
+
+        finalize();
+
+    }else{
+
+        alert("Payment successful (simulated).");
+
+        finalize();
+
+    }
+
+}
+
+fetch('PatientInfoServlet')
+.then(r => r.text())
+.then(name => {
+
+    document
+        .querySelectorAll('.patient-name-placeholder')
+        .forEach(el => el.textContent = name);
+
+})
+.catch(() => {
+
+    document
+        .querySelectorAll('.patient-name-placeholder')
+        .forEach(el => el.textContent = "Guest");
+
+});
+
+</script>
+
+</body>
+</html>

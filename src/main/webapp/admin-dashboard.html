@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — MediCore</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="admin-dashboard">
+
+<nav class="navbar">
+  <div class="container">
+    <a href="index_1.html" class="brand"><svg viewBox="0 0 24 24"><path d="M2 12h4l2-7 4 14 3-10 2 3h5"/></svg> MediCore</a>
+    <button class="nav-toggle" onclick="toggleNav()">&#9776;</button>
+    <div class="nav-links"></div>
+    <div class="nav-cta">
+      <span class="badge badge-ok" style="align-self:center">Admin</span>
+      <a href="LogoutServlet" class="btn btn-outline btn-sm">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<div class="dash">
+  <aside class="sidebar">
+    <h3>Admin menu</h3>
+    <a href="admin-dashboard.html" class="active">Dashboard</a>
+    <a href="#patients">Patients</a>
+    <a href="#doctors">Doctors</a>
+    <a href="admin-pharmacy.html">Pharmacy</a>
+    <a href="admin-labs.html">Labs &amp; Emergency</a>
+    <h3>Account</h3>
+    <a href="LogoutServlet">Logout</a>
+  </aside>
+
+  <main class="dash-main">
+    <h1>Hospital overview</h1>
+    <p>Snapshot of today's activity across MediCore.</p>
+
+    <div class="stat-grid">
+      <div class="card stat-card"><div class="num" id="statPatients">–</div><div class="label">Registered patients</div></div>
+      <div class="card stat-card"><div class="num" id="statDoctors">–</div><div class="label">Doctors on staff</div></div>
+      <div class="card stat-card"><div class="num" id="statApptToday">–</div><div class="label">Appointments today</div></div>
+      <div class="card stat-card"><div class="num" id="statLowStock">–</div><div class="label">Medicines low in stock</div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card card-pad" id="patients">
+        <h3>Recent patient registrations</h3>
+        <table>
+          <tr><th>Name</th><th>Registered</th><th>Status</th></tr>
+          <tbody id="recentPatientRows">
+            <tr><td colspan="3">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card card-pad" id="doctors">
+        <h3>Pharmacy stock alerts</h3>
+        <table>
+          <tr><th>Medicine</th><th>Stock left</th><th></th></tr>
+          <tr><td>Amoxicillin 500mg</td><td class="mono">6</td><td><span class="badge badge-warn">Low</span></td></tr>
+          <tr><td>Insulin Glargine</td><td class="mono">0</td><td><span class="badge badge-danger">Out of stock</span></td></tr>
+          <tr><td>Paracetamol 650mg</td><td class="mono">210</td><td><span class="badge badge-ok">OK</span></td></tr>
+        </table>
+        <p style="margin-top:12px"><a href="admin-pharmacy.html">Manage pharmacy →</a></p>
+      </div>
+    </div>
+
+    <div class="card card-pad" style="margin-top:24px">
+      <h3>Pending staff requests</h3>
+      <table>
+        <tr><th>Name</th><th>Role</th><th>Department</th><th>Email</th><th>Action</th></tr>
+        <tbody id="pendingStaffRows">
+          <tr><td colspan="5">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script src="script.js"></script>
+<script>
+  fetch('PendingStaffServlet')
+    .then(r => r.text())
+    .then(html => { document.getElementById('pendingStaffRows').innerHTML = html; });
+
+  fetch('AdminStatsServlet')
+    .then(r => r.text())
+    .then(data => {
+      const [patients, doctors, apptToday, lowStock] = data.split('|');
+      document.getElementById('statPatients').textContent = patients;
+      document.getElementById('statDoctors').textContent = doctors;
+      document.getElementById('statApptToday').textContent = apptToday;
+      document.getElementById('statLowStock').textContent = lowStock;
+    });
+
+  fetch('AdminRecentPatientsServlet')
+    .then(r => r.text())
+    .then(html => { document.getElementById('recentPatientRows').innerHTML = html; });
+</script>
+</body>
+</html>

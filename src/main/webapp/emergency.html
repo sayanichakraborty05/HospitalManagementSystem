@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emergency — MediCore</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="emergency">
+
+<nav class="navbar">
+  <div class="container">
+    <a href="index.html" class="brand"><svg viewBox="0 0 24 24"><path d="M2 12h4l2-7 4 14 3-10 2 3h5"/></svg> MediCore</a>
+    <button class="nav-toggle" onclick="toggleNav()">&#9776;</button>
+    <div class="nav-links"></div>
+    <div class="nav-cta">
+      <span class="badge badge-ok" style="align-self:center">Patient: <span class="patient-name-placeholder">Guest</span></span>
+      <a href="index.html" class="btn btn-outline btn-sm">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<div class="dash">
+  <aside class="sidebar">
+    <h3>Patient menu</h3>
+    <a href="patient-dashboard.html">Dashboard</a>
+    <a href="appointment.html">Appointments</a>
+    <a href="medical-history.html">Medical History</a>
+    <a href="prescription.html">Prescriptions</a>
+    <a href="pharmacy.html">Pharmacy</a>
+    <a href="lab-test.html">Lab Tests</a>
+    <a href="emergency.html" class="active">Emergency</a>
+    <a href="feedback.html">Feedback</a>
+    <h3>Account</h3>
+    <a href="index.html">Logout</a>
+  </aside>
+
+  <main class="dash-main">
+    <div class="alert alert-danger" style="max-width:640px">If this is a life-threatening emergency, call <strong>108</strong> or our emergency line below immediately — do not wait for this form.</div>
+    <h1>Emergency &amp; ambulance</h1>
+    <p style="max-width:600px">Our emergency wing is open 24×7. Use the form to request an ambulance; our team will call you back to confirm.</p>
+
+    <div class="grid-2" style="margin-top:16px">
+      <div class="card card-pad">
+        <h3>Emergency contact</h3>
+        <p>📞 Emergency hotline: <strong>+91 90000 11111</strong></p>
+        <p>🚑 Ambulance dispatch: <strong>+91 90000 22222</strong></p>
+        <p>🏥 Emergency ward: Ground floor, Gate 2</p>
+        <span class="badge badge-danger">Open 24×7</span>
+      </div>
+
+      <form id="ambulanceForm" class="card card-pad" action="AmbulanceServlet" method="POST">
+        <h3>Request an ambulance</h3>
+        <div class="alert alert-info js-form-msg" style="display:none"></div>
+        <div class="form-group">
+          <label for="name">Patient / caller name</label>
+          <input id="name" name="name" type="text" required>
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone number</label>
+          <input id="phone" name="phone" type="tel" required>
+        </div>
+        <div class="form-group">
+          <label for="location">Pickup location</label>
+          <textarea id="location" name="location" rows="2" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="condition">Condition (brief)</label>
+          <input id="condition" name="condition" type="text" placeholder="e.g. chest pain, accident">
+        </div>
+        <button type="submit" class="btn btn-coral btn-block">Request ambulance now</button>
+      </form>
+    </div>
+  </main>
+</div>
+
+<script src="script.js"></script>
+<script>
+  fetch('PatientInfoServlet')
+    .then(r => r.text())
+    .then(name => {
+      document.querySelectorAll('.patient-name-placeholder').forEach(el => el.textContent = name);
+    });
+</script>
+</body>
+</html>

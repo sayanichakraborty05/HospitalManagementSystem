@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediCore — Hospital Management System</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="index">
+
+<nav class="navbar">
+  <div class="container">
+    <a href="index_1.html" class="brand"><svg viewBox="0 0 24 24"><path d="M2 12h4l2-7 4 14 3-10 2 3h5"/></svg> MediCore</a>
+    <button class="nav-toggle" onclick="toggleNav()">&#9776;</button>
+    <div class="nav-links">
+      <a href="index_1.html" data-nav="index" class="active">Home</a>
+      <a href="about.html" data-nav="about">About</a>
+      <a href="appointment.html" data-nav="appointment">Appointments</a>
+      <a href="pharmacy.html" data-nav="pharmacy">Pharmacy</a>
+      <a href="lab-test.html" data-nav="lab-test">Lab Tests</a>
+      <a href="emergency.html" data-nav="emergency">Emergency</a>
+      <a href="contact.html" data-nav="contact">Contact</a>
+    </div>
+    <div class="nav-cta">
+      <a href="patient-login.html" class="btn btn-outline btn-sm">Log in</a>
+      <a href="patient-register.html" class="btn btn-primary btn-sm">Register</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="eyebrow">24×7 CARE · MULTI-SPECIALTY</div>
+      <h1>One system, every step of your care.</h1>
+      <p>Book appointments, order medicines, track your medical history and reach emergency care — all from one hospital management platform.</p>
+      <div class="pulse-divider"><svg viewBox="0 0 800 40" preserveAspectRatio="none"><path d="M0 20 H300 L320 5 L340 35 L360 20 H420 L440 8 L460 32 L480 20 H800"/></svg></div>
+      <div style="display:flex;gap:12px">
+        <a href="appointment.html" class="btn btn-primary">Book an appointment</a>
+        <a href="emergency.html" class="btn btn-coral">Emergency</a>
+      </div>
+    </div>
+    <div class="card card-pad">
+      <h3>Today at MediCore</h3>
+      <table>
+        <tr><td>Approved doctors</td><td class="mono" id="homeDoctors">–</td></tr>
+        <tr><td>Confirmed appointments today</td><td class="mono" id="homeApptToday">–</td></tr>
+        <tr><td>Medicines low in stock</td><td class="mono" id="homeLowStock">–</td></tr>
+        <tr><td>Pharmacy status</td><td><span class="badge badge-ok">Open</span></td></tr>
+      </table>
+    </div>
+  </div>
+</header>
+
+<section class="section container">
+  <h2>What you can do here</h2>
+  <div class="grid-3">
+    <div class="card card-pad">
+      <h3>Book appointments</h3>
+      <p>Choose a department, pick a doctor and a slot that works for you.</p>
+      <a href="appointment.html">Book now →</a>
+    </div>
+    <div class="card card-pad">
+      <h3>Order medicines</h3>
+      <p>Search the pharmacy, check stock, and get medicines delivered home.</p>
+      <a href="pharmacy.html">Visit pharmacy →</a>
+    </div>
+    <div class="card card-pad">
+      <h3>Track your records</h3>
+      <p>View medical history and prescriptions from one dashboard.</p>
+      <a href="patient-login.html">Patient login →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <span>© 2026 MediCore Hospital Management System</span>
+    <span>Java Servlets · JSP · MySQL</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  fetch('HomeStatsServlet')
+    .then(r => r.text())
+    .then(data => {
+      const [doctors, apptToday, lowStock] = data.split('|');
+      document.getElementById('homeDoctors').textContent = doctors;
+      document.getElementById('homeApptToday').textContent = apptToday;
+      document.getElementById('homeLowStock').textContent = lowStock;
+    });
+</script>
+</body>
+</html>

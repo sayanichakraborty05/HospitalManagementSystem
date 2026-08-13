@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Dashboard — MediCore</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body data-page="patient-dashboard">
+
+<nav class="navbar">
+
+<div class="container">
+
+<a href="index_1.html" class="brand">
+
+<svg viewBox="0 0 24 24">
+<path d="M2 12h4l2-7 4 14 3-10 2 3h5"/>
+</svg>
+
+MediCore
+
+</a>
+
+<button class="nav-toggle" onclick="toggleNav()">
+
+&#9776;
+
+</button>
+
+<div class="nav-links"></div>
+
+<div class="nav-cta">
+
+<span class="badge badge-ok" style="align-self:center">
+
+Patient :
+<span class="patient-name-placeholder">Guest</span>
+
+</span>
+
+<a href="LogoutServlet" class="btn btn-outline btn-sm">
+
+Logout
+
+</a>
+
+</div>
+
+</div>
+
+</nav>
+
+<div class="dash">
+
+<aside class="sidebar">
+
+<h3>Patient Menu</h3>
+
+<a href="patient-dashboard.html" class="active">Dashboard</a>
+
+<a href="appointment.html">Appointments</a>
+
+<a href="medical-history.html">Medical History</a>
+
+<a href="prescription.html">Prescriptions</a>
+
+<a href="pharmacy.html">Pharmacy</a>
+
+<a href="lab-test.html">Lab Tests</a>
+
+<a href="emergency.html">Emergency</a>
+
+<a href="feedback.html">Feedback</a>
+
+<h3>Account</h3>
+
+<a href="LogoutServlet">Logout</a>
+
+</aside>
+
+<main class="dash-main">
+
+<h1>
+
+Welcome back,
+
+<span class="patient-name-placeholder">Guest</span>
+
+</h1>
+
+<p>
+
+Here's a quick look at your care.
+
+</p>
+
+<div class="stat-grid">
+
+<div class="card stat-card">
+
+<div class="num" id="statAppt">-</div>
+
+<div class="label">Upcoming Appointments</div>
+
+</div>
+
+<div class="card stat-card">
+
+<div class="num" id="statRx">-</div>
+
+<div class="label">Active Prescriptions</div>
+
+</div>
+
+<div class="card stat-card">
+
+<div class="num mono" id="statVisit">-</div>
+
+<div class="label">Last Visit</div>
+
+</div>
+
+<div class="card stat-card">
+
+<div class="num" id="statBlood">-</div>
+
+<div class="label">Blood Group</div>
+
+</div>
+
+</div>
+
+<div class="grid-2">
+          <div class="card card-pad">
+        <h3>Upcoming Appointments</h3>
+        <table>
+          <tr>
+            <th>Date</th>
+            <th>Doctor</th>
+            <th>Department</th>
+            <th>Status</th>
+            <th>Fee</th>
+            <th>Payment</th>
+          </tr>
+
+          <tbody id="apptRows">
+            <tr>
+              <td colspan="6">Loading...</td>
+            </tr>
+          </tbody>
+
+        </table>
+
+        <p style="margin-top:12px">
+          <a href="appointment.html">Book another appointment →</a>
+        </p>
+      </div>
+
+      <div class="card card-pad">
+
+        <h3>Active Prescriptions</h3>
+
+        <table>
+
+          <tr>
+            <th>Medicine</th>
+            <th>Dosage</th>
+            <th>Refill</th>
+          </tr>
+
+          <tbody id="rxRows">
+
+            <tr>
+              <td colspan="3">Loading...</td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+        <p style="margin-top:12px">
+          <a href="prescription.html">View all prescriptions →</a>
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="card card-pad" style="margin-top:24px">
+
+      <h3>Lab Test Bookings</h3>
+
+      <div id="labRows">
+        <p class="form-hint">Loading...</p>
+      </div>
+
+      <p style="margin-top:12px">
+        <a href="lab-test.html">Book another test →</a>
+      </p>
+
+    </div>
+
+    <div class="card card-pad" style="margin-top:24px">
+
+      <h3>Ambulance Requests</h3>
+
+      <div id="ambulanceRows">
+        <p class="form-hint">Loading...</p>
+      </div>
+
+      <p style="margin-top:12px">
+        <a href="emergency.html">Request an ambulance →</a>
+      </p>
+
+    </div>
+
+  </main>
+
+</div>
+
+<script src="script.js"></script>
+
+<script>
+
+fetch("PatientInfoServlet")
+.then(r=>r.text())
+.then(name=>{
+    document.querySelectorAll(".patient-name-placeholder")
+    .forEach(el=>el.textContent=name);
+})
+.catch(()=>{
+    document.querySelectorAll(".patient-name-placeholder")
+    .forEach(el=>el.textContent="Guest");
+});
+
+fetch("MyAppointmentsServlet")
+.then(r=>r.text())
+.then(html=>{
+    document.getElementById("apptRows").innerHTML=html;
+});
+
+fetch("MyPrescriptionsServlet")
+.then(r=>r.text())
+.then(html=>{
+    document.getElementById("rxRows").innerHTML=html;
+});
+
+fetch("PatientStatsServlet")
+.then(r=>r.text())
+.then(data=>{
+
+    const values=data.split("|");
+
+    if(values.length>=4){
+
+        document.getElementById("statBlood").textContent=values[0];
+        document.getElementById("statAppt").textContent=values[1];
+        document.getElementById("statRx").textContent=values[2];
+        document.getElementById("statVisit").textContent=values[3];
+
+    }
+
+});
+
+fetch("MyLabBookingsServlet")
+.then(r=>r.text())
+.then(html=>{
+    document.getElementById("labRows").innerHTML=html;
+});
+
+fetch("MyAmbulanceRequestsServlet")
+.then(r=>r.text())
+.then(html=>{
+    document.getElementById("ambulanceRows").innerHTML=html;
+});
+
+</script>
+
+</body>
+</html>

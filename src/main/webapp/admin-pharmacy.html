@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pharmacy Management — MediCore</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body data-page="admin-pharmacy">
+
+<nav class="navbar">
+  <div class="container">
+
+    <a href="index_1.html" class="brand">
+      <svg viewBox="0 0 24 24">
+        <path d="M2 12h4l2-7 4 14 3-10 2 3h5"/>
+      </svg>
+      MediCore
+    </a>
+
+    <button class="nav-toggle" onclick="toggleNav()">
+      &#9776;
+    </button>
+
+    <div class="nav-links"></div>
+
+    <div class="nav-cta">
+
+      <span class="badge badge-ok" style="align-self:center">
+        Admin:
+        <span class="staff-name-placeholder">Admin</span>
+      </span>
+
+      <!-- Fixed -->
+      <a href="LogoutServlet" class="btn btn-outline btn-sm">
+        Logout
+      </a>
+
+    </div>
+
+  </div>
+</nav>
+
+<div class="dash">
+
+<aside class="sidebar">
+
+<h3>Admin menu</h3>
+
+<a href="admin-dashboard.html">Dashboard</a>
+
+<a href="#patients">Patients</a>
+
+<a href="#doctors">Doctors</a>
+
+<a href="admin-pharmacy.html" class="active">
+Pharmacy
+</a>
+
+<a href="admin-labs.html">
+Labs &amp; Emergency
+</a>
+
+<h3>Account</h3>
+
+<a href="LogoutServlet">
+Logout
+</a>
+
+</aside>
+
+<main class="dash-main">
+
+<h1>Pharmacy Management</h1>
+
+<p>
+
+Update medicine stock and manage orders below.
+
+</p>
+
+<div class="card card-pad">
+
+<h3>Medicine Stock</h3>
+
+<table>
+
+<tr>
+
+<th>Medicine</th>
+
+<th>Price</th>
+
+<th>Stock</th>
+
+<th>Status</th>
+
+<th>Update</th>
+
+</tr>
+
+<tbody id="medicineRows">
+
+<tr>
+
+<td colspan="5">
+
+Loading...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="card card-pad" style="margin-top:24px">
+
+<h3>Pharmacy Orders</h3>
+
+<table>
+
+<tr>
+
+<th>Order ID</th>
+
+<th>Customer</th>
+
+<th>Mode</th>
+
+<th>Total</th>
+
+<th>Status</th>
+
+<th>Update</th>
+
+</tr>
+
+<tbody id="orderRows">
+
+<tr>
+
+<td colspan="6">
+
+Loading...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</main>
+
+</div>
+
+<script src="script.js"></script>
+
+<script>
+fetch("AdminMedicinesServlet")
+
+.then(response=>{
+
+if(!response.ok){
+
+throw new Error();
+
+}
+
+return response.text();
+
+})
+
+.then(data=>{
+
+document.getElementById("medicineRows").innerHTML=data;
+
+})
+
+.catch(()=>{
+
+document.getElementById("medicineRows").innerHTML=
+"<tr><td colspan='5'>Unable to load medicines.</td></tr>";
+
+});
+
+fetch("AdminOrdersServlet")
+
+.then(response=>{
+
+if(!response.ok){
+
+throw new Error();
+
+}
+
+return response.text();
+
+})
+
+.then(data=>{
+
+document.getElementById("orderRows").innerHTML=data;
+
+})
+
+.catch(()=>{
+
+document.getElementById("orderRows").innerHTML=
+"<tr><td colspan='6'>Unable to load orders.</td></tr>";
+
+});
+
+fetch("StaffInfoServlet")
+
+.then(response=>{
+
+if(!response.ok){
+
+throw new Error();
+
+}
+
+return response.text();
+
+})
+
+.then(name=>{
+
+document.querySelectorAll(".staff-name-placeholder")
+
+.forEach(function(el){
+
+el.textContent=name;
+
+});
+
+})
+
+.catch(()=>{
+
+document.querySelectorAll(".staff-name-placeholder")
+
+.forEach(function(el){
+
+el.textContent="Admin";
+
+});
+
+});
+
+</script>
+
+</body>
+</html>

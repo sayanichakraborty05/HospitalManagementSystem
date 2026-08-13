@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pharmacy — MediCore</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="pharmacy">
+
+<nav class="navbar">
+  <div class="container">
+    <a href="index_1.html" class="brand"><svg viewBox="0 0 24 24"><path d="M2 12h4l2-7 4 14 3-10 2 3h5"/></svg> MediCore</a>
+    <button class="nav-toggle" onclick="toggleNav()">&#9776;</button>
+    <div class="nav-links"></div>
+    <div class="nav-cta">
+      <span class="badge badge-ok" style="align-self:center">Patient: <span class="patient-name-placeholder">Guest</span></span>
+      <a href="LogoutServlet" class="btn btn-outline btn-sm">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<div class="dash">
+  <aside class="sidebar">
+    <h3>Patient menu</h3>
+    <a href="patient-dashboard.html">Dashboard</a>
+    <a href="appointment.html">Appointments</a>
+    <a href="medical-history.html">Medical History</a>
+    <a href="prescription.html">Prescriptions</a>
+    <a href="pharmacy.html" class="active">Pharmacy</a>
+    <a href="lab-test.html">Lab Tests</a>
+    <a href="emergency.html">Emergency</a>
+    <a href="feedback.html">Feedback</a>
+    <h3>Account</h3>
+    <a href="LogoutServlet">Logout</a>
+  </aside>
+
+  <main class="dash-main">
+    <div class="eyebrow">MEDICORE PHARMACY</div>
+    <h1>Order medicines online</h1>
+    <p style="max-width:600px">Search below, add to cart, then check delivery to your area — or pick up at the counter.</p>
+
+  <div class="grid-2" style="grid-template-columns:1.5fr 1fr;align-items:start;margin-top:16px">
+
+    <div>
+      <input id="medSearch" type="text" placeholder="Search medicines…" style="margin-bottom:16px">
+      <div class="card" id="medList"></div>
+    </div>
+
+    <div>
+      <div class="card card-pad cart-summary">
+        <h3>Your cart</h3>
+        <div id="cartItems"><p class="form-hint">Cart is empty — add medicines from the list.</p></div>
+        <table style="margin-top:10px">
+          <tr><td>Subtotal</td><td class="mono" id="subtotal" style="text-align:right">₹0</td></tr>
+          <tr><td>Delivery charge</td><td class="mono" id="deliveryChargeRow" style="text-align:right">—</td></tr>
+          <tr><td><strong>Total</strong></td><td class="mono" id="grandTotal" style="text-align:right"><strong>₹0</strong></td></tr>
+        </table>
+
+        <div class="form-row" style="margin-top:12px">
+          <div class="form-group">
+            <label for="custName">Full name</label>
+            <input id="custName" type="text" placeholder="Your name">
+          </div>
+          <div class="form-group">
+            <label for="custEmail">Email</label>
+            <input id="custEmail" type="email" placeholder="your@email.com">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>How do you want your order?</label>
+          <div style="display:flex;gap:18px">
+            <label style="display:flex;align-items:center;gap:6px;font-weight:400;color:var(--ink)">
+              <input type="radio" name="orderMode" value="delivery" checked onchange="setOrderMode(this.value)"> Home delivery
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-weight:400;color:var(--ink)">
+              <input type="radio" name="orderMode" value="pickup" onchange="setOrderMode(this.value)"> Pickup at counter
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group" id="deliverySection" style="margin-top:16px">
+          <label for="pincode">Check delivery — enter pincode</label>
+          <div style="display:flex;gap:8px">
+            <input id="pincode" type="text" maxlength="6" placeholder="e.g. 713301">
+            <button class="btn btn-outline btn-sm" onclick="checkDelivery()" type="button">Check</button>
+          </div>
+          <div id="deliveryResult"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Payment method</label>
+          <div style="display:flex;gap:18px;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:6px;font-weight:400;color:var(--ink)">
+              <input type="radio" name="paymentMethod" value="cod" checked onchange="setPaymentMethod(this.value)"> Cash on delivery
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-weight:400;color:var(--ink)">
+              <input type="radio" name="paymentMethod" value="upi" onchange="setPaymentMethod(this.value)"> UPI
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-weight:400;color:var(--ink)">
+              <input type="radio" name="paymentMethod" value="card" onchange="setPaymentMethod(this.value)"> Card
+            </label>
+          </div>
+
+          <div id="upiSection" style="display:none;margin-top:10px">
+            <label for="upiId">UPI ID</label>
+            <input id="upiId" type="text" placeholder="yourname@upi">
+          </div>
+
+          <div id="cardSection" style="display:none;margin-top:10px">
+            <label for="cardNumber">Card number</label>
+            <input id="cardNumber" type="text" maxlength="19" placeholder="1234 5678 9012 3456">
+            <div class="form-row" style="margin-top:8px">
+              <div class="form-group">
+                <label for="cardExpiry">Expiry</label>
+                <input id="cardExpiry" type="text" maxlength="5" placeholder="MM/YY">
+              </div>
+              <div class="form-group">
+                <label for="cardCvv">CVV</label>
+                <input id="cardCvv" type="text" maxlength="3" placeholder="123">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-gold btn-block" style="margin-top:14px" onclick="placeOrder()">Place order</button>
+      </div>
+
+      <div class="card card-pad" id="trackingPanel" style="margin-top:20px;display:none"></div>
+
+      <div class="card card-pad" style="margin-top:20px">
+        <h3>Your past orders</h3>
+        <div id="pastOrders"><p class="form-hint">Loading...</p></div>
+      </div>
+    </div>
+  </div>
+  </main>
+</div>
+
+<script src="script.js"></script>
+<script>
+let medicines = [];
+
+const deliveryZones = [
+  {pincode:'713301', area:'Asansol Town', charge:30, time:'60–90 min', etaMinutes:75},
+  {pincode:'713302', area:'Asansol – Court More', charge:30, time:'60–90 min', etaMinutes:75},
+  {pincode:'713303', area:'Asansol – Rambandhu Talab', charge:35, time:'60–90 min', etaMinutes:80},
+  {pincode:'713304', area:'Asansol – Ushagram', charge:40, time:'90–120 min', etaMinutes:105},
+  {pincode:'713305', area:'Asansol – Chelidanga', charge:35, time:'75–100 min', etaMinutes:85},
+  {pincode:'713306', area:'Asansol – Hutton Road', charge:35, time:'75–100 min', etaMinutes:85},
+  {pincode:'713325', area:'Asansol – Kulti', charge:45, time:'90–120 min', etaMinutes:105},
+  {pincode:'713334', area:'Punchra, Kelejora, Domohani', charge:50, time:'60–90 min', etaMinutes:75},
+  {pincode:'713340', area:'Barakar', charge:50, time:'100–130 min', etaMinutes:115},
+  {pincode:'713213', area:'Durgapur City Centre', charge:60, time:'2–3 hrs', etaMinutes:150},
+  {pincode:'713205', area:'Durgapur – Bidhannagar', charge:65, time:'2–3 hrs', etaMinutes:160},
+  {pincode:'713212', area:'Durgapur – Benachity', charge:65, time:'2–3 hrs', etaMinutes:160},
+  {pincode:'713101', area:'Ranigunj', charge:45, time:'90–120 min', etaMinutes:105},
+  {pincode:'713359', area:'Salanpur', charge:55, time:'100–130 min', etaMinutes:115},
+  {pincode:'700001', area:'Kolkata Central', charge:99, time:'Next day', etaMinutes:1080},
+];
+
+let cart = {};
+let orderMode = 'delivery';
+let deliveryChecked = false;
+let selectedZone = null;
+let currentDeliveryCharge = 0;
+let trackingTimer = null;
+let lastFilter = '';
+
+function renderMedicines(filter=lastFilter){
+  lastFilter = filter;
+  const list = document.getElementById('medList');
+  list.innerHTML = '';
+  medicines
+    .filter(m => m.name.toLowerCase().includes(filter.toLowerCase()))
+    .forEach(m => {
+      const inCart = cart[m.id] || 0;
+      const remaining = m.stock - inCart;
+      const outOfStock = m.stock === 0;
+      const lowStock = remaining > 0 && remaining <= 10;
+      const row = document.createElement('div');
+      row.className = 'med-card';
+      row.innerHTML = `
+        <div>
+          <div class="med-name">${m.name}</div>
+          <div class="med-meta">₹${m.price} ·
+            ${outOfStock
+              ? '<span class="badge badge-danger">Out of stock</span>'
+              : remaining === 0
+                ? '<span class="badge badge-danger">No more stock left</span>'
+                : lowStock
+                  ? `<span class="badge badge-warn">${remaining} left in stock</span>`
+                  : '<span class="badge badge-ok">In stock</span>'}
+          </div>
+        </div>
+        ${outOfStock
+          ? '<button class="btn btn-outline btn-sm" disabled>Out of stock</button>'
+          : `<div class="qty-box">
+               <button type="button" onclick="changeQty('${m.id}', -1)">−</button>
+               <span id="qty-${m.id}" class="mono">${inCart}</span>
+               <button type="button" onclick="changeQty('${m.id}', 1)" ${remaining===0?'disabled':''}>+</button>
+             </div>`
+        }
+      `;
+      list.appendChild(row);
+    });
+}
+
+function changeQty(id, delta){
+  const med = medicines.find(m => m.id === id);
+  const current = cart[id] || 0;
+  const next = Math.max(0, Math.min(med.stock, current + delta));
+  cart[id] = next;
+  renderMedicines();
+  renderCart();
+}
+
+function renderCart(){
+  const itemsEl = document.getElementById('cartItems');
+  const entries = Object.entries(cart).filter(([,qty]) => qty > 0);
+  if(entries.length === 0){
+    itemsEl.innerHTML = '<p class="form-hint">Cart is empty — add medicines from the list.</p>';
+  } else {
+    itemsEl.innerHTML = entries.map(([id, qty]) => {
+      const med = medicines.find(m => m.id === id);
+      return `<div class="med-card" style="padding:8px 0">
+        <span>${med.name} × ${qty}</span>
+        <span class="mono">₹${med.price*qty}</span>
+      </div>`;
+    }).join('');
+  }
+  const subtotal = entries.reduce((sum,[id,qty]) => sum + medicines.find(m=>m.id===id).price*qty, 0);
+  document.getElementById('subtotal').textContent = '₹' + subtotal;
+  updateTotal(subtotal);
+}
+
+function updateTotal(subtotal){
+  const total = subtotal + currentDeliveryCharge;
+  document.getElementById('grandTotal').innerHTML = '<strong>₹' + total + '</strong>';
+}
+
+function checkDelivery(){
+  const pin = document.getElementById('pincode').value.trim();
+  const resultEl = document.getElementById('deliveryResult');
+  const chargeRow = document.getElementById('deliveryChargeRow');
+  const zone = deliveryZones.find(z => z.pincode === pin);
+
+  if(!pin || pin.length < 6){
+    resultEl.innerHTML = '<div class="delivery-result delivery-no">Enter a valid 6-digit pincode.</div>';
+    deliveryChecked = false;
+    selectedZone = null;
+    return;
+  }
+
+  if(zone){
+    currentDeliveryCharge = zone.charge;
+    deliveryChecked = true;
+    selectedZone = zone;
+    resultEl.innerHTML = `<div class="delivery-result delivery-ok">
+      ✅ Delivers to <strong>${zone.area}</strong><br>
+      Charge: <span class="mono">₹${zone.charge}</span> · Estimated time: <span class="mono">${zone.time}</span>
+    </div>`;
+    chargeRow.textContent = '₹' + zone.charge;
+  } else {
+    currentDeliveryCharge = 0;
+    deliveryChecked = false;
+    selectedZone = null;
+    resultEl.innerHTML = `<div class="delivery-result delivery-no">
+      ❌ Not delivery on your location yet.<br>
+      You can still pick up your order at the pharmacy counter.
+    </div>`;
+    chargeRow.textContent = 'Not available';
+  }
+  const subtotal = Object.entries(cart).filter(([,q])=>q>0)
+    .reduce((sum,[id,qty]) => sum + medicines.find(m=>m.id===id).price*qty, 0);
+  updateTotal(subtotal);
+}
+
+function setOrderMode(mode){
+  orderMode = mode;
+  const deliverySection = document.getElementById('deliverySection');
+  const chargeRow = document.getElementById('deliveryChargeRow');
+  if(mode === 'pickup'){
+    deliverySection.style.display = 'none';
+    currentDeliveryCharge = 0;
+    chargeRow.textContent = 'Free (pickup)';
+  } else {
+    deliverySection.style.display = 'block';
+    currentDeliveryCharge = selectedZone ? selectedZone.charge : 0;
+    chargeRow.textContent = selectedZone ? '₹' + selectedZone.charge : '—';
+  }
+  const subtotal = Object.entries(cart).filter(([,q])=>q>0)
+    .reduce((sum,[id,qty]) => sum + medicines.find(m=>m.id===id).price*qty, 0);
+  updateTotal(subtotal);
+}
+
+function setPaymentMethod(method){
+  document.getElementById('upiSection').style.display = (method === 'upi') ? 'block' : 'none';
+  document.getElementById('cardSection').style.display = (method === 'card') ? 'block' : 'none';
+}
+
+function placeOrder(){
+  const entries = Object.entries(cart).filter(([,qty]) => qty > 0);
+  if(entries.length === 0){
+    alert('Your cart is empty.');
+    return;
+  }
+  const custName = document.getElementById('custName').value.trim();
+  const custEmail = document.getElementById('custEmail').value.trim();
+  if(!custName || !custEmail){
+    alert('Please enter your name and email first.');
+    return;
+  }
+  if(orderMode === 'delivery' && !deliveryChecked){
+    alert('Please check delivery availability for your pincode first — or switch to "Pickup at counter".');
+    return;
+  }
+
+  const paymentMethod = document.querySelector('input[name=paymentMethod]:checked').value;
+
+  if(paymentMethod === 'upi'){
+    const upiId = document.getElementById('upiId').value.trim();
+    if(!upiId.includes('@')){
+      alert('Enter a valid UPI ID (e.g. yourname@upi).');
+      return;
+    }
+  }
+  if(paymentMethod === 'card'){
+    const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g,'');
+    const cardExpiry = document.getElementById('cardExpiry').value.trim();
+    const cardCvv = document.getElementById('cardCvv').value.trim();
+    if(cardNumber.length < 12 || !cardExpiry.includes('/') || cardCvv.length < 3){
+      alert('Enter valid card details.');
+      return;
+    }
+  }
+
+  const entriesToSend = entries;
+  const itemsStr = entriesToSend.map(([id, qty]) => id + ':' + qty).join(',');
+  const subtotal = entriesToSend.reduce((sum,[id,qty]) => sum + medicines.find(m=>m.id===id).price*qty, 0);
+  const total = subtotal + currentDeliveryCharge;
+
+  function submitOrder(){
+    const params = new URLSearchParams();
+    params.set('customerName', custName);
+    params.set('customerEmail', custEmail);
+    params.set('items', itemsStr);
+    params.set('orderMode', orderMode);
+    params.set('paymentMethod', paymentMethod);
+    params.set('subtotal', subtotal);
+    params.set('deliveryCharge', currentDeliveryCharge);
+    params.set('total', total);
+    params.set('pincode', selectedZone ? selectedZone.pincode : '');
+
+    fetch('PharmacyOrderServlet', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: params.toString()
+    })
+    .then(r => r.text())
+    .then(orderId => { startTrackingUI(orderId); loadPastOrders(); loadMedicines(); })
+    .catch(err => alert('Could not place order: ' + err));
+  }
+
+  if(paymentMethod === 'cod'){
+    submitOrder();
+  } else {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.textContent = 'Processing payment...';
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = 'Place order';
+      alert('Payment successful (simulated) — ₹' + total);
+      submitOrder();
+    }, 1500);
+  }
+}
+
+function startTrackingUI(realOrderId){
+
+  const orderId = 'MC' + realOrderId;
+  const panel = document.getElementById('trackingPanel');
+  panel.style.display = 'block';
+
+  if(trackingTimer) clearInterval(trackingTimer);
+
+  if(orderMode === 'delivery'){
+    const totalSeconds = selectedZone.etaMinutes * 60;
+    let secondsLeft = totalSeconds;
+    const steps = ['Order confirmed', 'Preparing at pharmacy', 'Out for delivery', 'Delivered'];
+    let stepIndex = 0;
+
+    function draw(){
+      const h = Math.floor(secondsLeft/3600);
+      const m = Math.floor((secondsLeft%3600)/60);
+      const s = secondsLeft%60;
+      const clock = (h>0? h+':' : '') + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      const progress = stepIndex >= 2 ? Math.min(1, 1 - secondsLeft/totalSeconds) : 0;
+
+      panel.innerHTML = `
+        <h3>Track your order · <span class="mono">${orderId}</span></h3>
+        <p class="form-hint">Delivering to <strong>${selectedZone.area}</strong> · Delivery charge <span class="mono">₹${selectedZone.charge}</span></p>
+
+        <div style="background:var(--mint-100);border-radius:10px;padding:10px;margin:12px 0">
+          <svg id="routeSvg" viewBox="0 0 400 110" style="width:100%;height:100px;display:block">
+            <path id="routePath" d="M20,90 C120,20 280,20 380,90" fill="none" stroke="var(--line)" stroke-width="3" stroke-dasharray="7 6"/>
+            <circle cx="20" cy="90" r="7" fill="var(--teal-700)"/>
+            <text x="8" y="106" font-size="10" fill="var(--ink-soft)">Pharmacy</text>
+            <circle cx="380" cy="90" r="7" fill="var(--coral)"/>
+            <text x="352" y="106" font-size="10" fill="var(--ink-soft)">You</text>
+            <text id="bikeMarker" font-size="20">🛵</text>
+          </svg>
+        </div>
+
+        <ol style="padding-left:18px;margin:14px 0">
+          ${steps.map((s2,i) => `<li style="margin-bottom:6px;color:${i<=stepIndex?'var(--teal-700)':'var(--ink-soft)'};font-weight:${i===stepIndex?'700':'400'}">
+            ${i<stepIndex?'✅':i===stepIndex?'🔵':'⚪'} ${s2}
+          </li>`).join('')}
+        </ol>
+        <div class="alert alert-info" style="margin-bottom:0">
+          ${stepIndex < steps.length-1
+            ? `Arriving in <span class="mono">${clock}</span>`
+            : 'Delivered — enjoy your medicines!'}
+        </div>
+      `;
+
+      const path = document.getElementById('routePath');
+      const marker = document.getElementById('bikeMarker');
+      if(path && marker){
+        const len = path.getTotalLength();
+        const pt = path.getPointAtLength(len * progress);
+        marker.setAttribute('x', pt.x - 10);
+        marker.setAttribute('y', pt.y + 6);
+      }
+    }
+    draw();
+
+    setTimeout(()=>{ stepIndex=1; draw(); }, 4000);
+    setTimeout(()=>{ stepIndex=2; draw(); }, 10000);
+
+    trackingTimer = setInterval(()=>{
+      secondsLeft = Math.max(0, secondsLeft-1);
+      if(secondsLeft === 0){
+        stepIndex = steps.length-1;
+        clearInterval(trackingTimer);
+      }
+      draw();
+    }, 1000);
+
+  } else {
+    let secondsLeft = 20*60;
+    function draw(){
+      const m = Math.floor(secondsLeft/60), s = secondsLeft%60;
+      panel.innerHTML = `
+        <h3>Track your order · <span class="mono">${orderId}</span></h3>
+        <p class="form-hint">Pickup at the MediCore pharmacy counter — no delivery charge.</p>
+        <div class="alert alert-info" style="margin-bottom:0">
+          ${secondsLeft>0
+            ? `Ready for pickup in <span class="mono">${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</span>`
+            : 'Ready for pickup now — please collect within 24 hours.'}
+        </div>
+      `;
+    }
+    draw();
+    trackingTimer = setInterval(()=>{
+      secondsLeft = Math.max(0, secondsLeft-1);
+      draw();
+      if(secondsLeft===0) clearInterval(trackingTimer);
+    }, 1000);
+  }
+
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function loadPastOrders(){
+  fetch('MyOrdersServlet')
+    .then(r => r.text())
+    .then(html => { document.getElementById('pastOrders').innerHTML = html; });
+}
+
+document.getElementById('medSearch').addEventListener('input', e => renderMedicines(e.target.value));
+
+function loadMedicines(){
+  fetch('MedicineListServlet')
+    .then(r => r.text())
+    .then(text => {
+      medicines = text.trim().split('\n').filter(Boolean).map(line => {
+        const [code, name, price, stock] = line.split('~');
+        return { id: code, name: name, price: Number(price), stock: Number(stock) };
+      });
+      renderMedicines();
+      renderCart();
+    });
+}
+loadMedicines();
+loadPastOrders();
+
+fetch('PatientInfoServlet')
+  .then(r => r.text())
+  .then(name => {
+    document.querySelectorAll('.patient-name-placeholder').forEach(el => el.textContent = name);
+  });
+</script>
+</body>
+</html>

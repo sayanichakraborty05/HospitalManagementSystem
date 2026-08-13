@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doctor Dashboard — MediCore</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body data-page="doctor-dashboard">
+
+<nav class="navbar">
+<div class="container">
+
+<a href="index_1.html" class="brand">
+<svg viewBox="0 0 24 24">
+<path d="M2 12h4l2-7 4 14 3-10 2 3h5"/>
+</svg>
+MediCore
+</a>
+
+<button class="nav-toggle" onclick="toggleNav()">
+&#9776;
+</button>
+
+<div class="nav-links"></div>
+
+<div class="nav-cta">
+
+<span class="badge badge-ok" style="align-self:center">
+Doctor :
+<span class="staff-name-placeholder">Doctor</span>
+</span>
+
+<a href="LogoutServlet" class="btn btn-outline btn-sm">
+Logout
+</a>
+
+</div>
+
+</div>
+</nav>
+
+<div class="dash">
+
+<aside class="sidebar">
+
+<h3>Doctor Menu</h3>
+
+<a href="doctor-dashboard.html" class="active">
+Dashboard
+</a>
+
+<h3>Account</h3>
+
+<a href="LogoutServlet">
+Logout
+</a>
+
+</aside>
+
+<main class="dash-main">
+
+<h1>
+
+Welcome Dr.
+
+<span class="staff-name-placeholder">Doctor</span>
+
+</h1>
+
+<p>
+
+Review and approve appointment requests below.
+
+</p>
+
+<div class="card card-pad">
+
+<h3>Pending Appointments</h3>
+
+<table>
+
+<tr>
+
+<th>Patient</th>
+
+<th>Date &amp; Time</th>
+
+<th>Department</th>
+
+<th>Reason</th>
+
+<th>Approve</th>
+
+<th>Reject</th>
+
+</tr>
+
+<tbody id="pendingApptRows">
+
+<tr>
+
+<td colspan="6">
+
+Loading...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="card card-pad" style="margin-top:24px">
+
+<h3>My Patients</h3>
+
+<table>
+
+<tr>
+
+<th>Patient</th>
+
+<th>Last Visit</th>
+
+<th>Action</th>
+
+</tr>
+
+<tbody id="myPatientsRows">
+
+<tr>
+
+<td colspan="3">
+
+Loading...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</main>
+
+</div>
+
+<script src="script.js"></script>
+
+<script>
+
+fetch("PendingAppointmentsServlet")
+
+.then(response=>{
+
+if(!response.ok){
+
+throw new Error();
+
+}
+
+return response.text();
+
+})
+
+.then(data=>{
+
+document.getElementById("pendingApptRows").innerHTML=data;
+
+})
+
+.catch(()=>{
+
+document.getElementById("pendingApptRows").innerHTML=
+"<tr><td colspan='6'>Unable to load appointments.</td></tr>";
+
+});
+
+fetch("MyPatientsServlet")
+
+.then(response=>{
+
+if(!response.ok){
+
+throw new Error();
+
+}
+
+return response.text();
+
+})
+
+.then(data=>{
+
+document.getElementById("myPatientsRows").innerHTML=data;
+
+})
+
+.catch(()=>{
+
+document.getElementById("myPatientsRows").innerHTML=
+"<tr><td colspan='3'>Unable to load patients.</td></tr>";
+
+});
+
+fetch("StaffInfoServlet")
+
+.then(response=>{
+
+    if(!response.ok){
+
+        throw new Error();
+
+    }
+
+    return response.text();
+
+})
+
+.then(name=>{
+
+    document.querySelectorAll(".staff-name-placeholder")
+
+    .forEach(function(el){
+
+        el.textContent=name;
+
+    });
+
+})
+
+.catch(()=>{
+
+    document.querySelectorAll(".staff-name-placeholder")
+
+    .forEach(function(el){
+
+        el.textContent="Doctor";
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>

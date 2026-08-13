@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Registration — MediCore</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="register">
+
+<nav class="navbar">
+  <div class="container">
+    <a href="index_1.html" class="brand"><svg viewBox="0 0 24 24"><path d="M2 12h4l2-7 4 14 3-10 2 3h5"/></svg> MediCore</a>
+    <button class="nav-toggle" onclick="toggleNav()">&#9776;</button>
+    <div class="nav-links">
+      <a href="index_1.html" data-nav="index">Home</a>
+      <a href="about.html" data-nav="about">About</a>
+      <a href="appointment.html" data-nav="appointment">Appointments</a>
+      <a href="pharmacy.html" data-nav="pharmacy">Pharmacy</a>
+      <a href="lab-test.html" data-nav="lab-test">Lab Tests</a>
+      <a href="emergency.html" data-nav="emergency">Emergency</a>
+      <a href="contact.html" data-nav="contact">Contact</a>
+    </div>
+    <div class="nav-cta">
+      <a href="login.html" class="btn btn-outline btn-sm">Staff login</a>
+    </div>
+  </div>
+</nav>
+
+<section class="container">
+  <form id="staffRegForm" class="card form-card" action="StaffRegisterServlet" method="POST">
+    <h2>Request a staff account</h2>
+    <p class="form-hint" style="margin-bottom:18px">Submitted requests are approved by the hospital admin before login is enabled.</p>
+    <div class="alert alert-info js-form-msg" style="display:none"></div>
+    <div class="form-group">
+      <label for="name">Full name</label>
+      <input id="name" name="name" type="text" required>
+    </div>
+    <div class="form-group">
+      <label for="role">Requested role</label>
+      <select id="role" name="role" required>
+        <option value="doctor">Doctor</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="dept">Department</label>
+      <input id="dept" name="department" type="text" placeholder="e.g. Cardiology">
+    </div>
+    <div class="form-group">
+      <label for="email">Work email</label>
+      <input id="email" name="email" type="email" required>
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required minlength="6">
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Submit request</button>
+    <p class="form-foot">Already approved? <a href="login.html">Log in</a></p>
+  </form>
+</section>
+
+<footer>
+  <div class="container">
+    <span>© 2026 MediCore Hospital Management System</span>
+    <span>Java Servlets · JSP · MySQL</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>

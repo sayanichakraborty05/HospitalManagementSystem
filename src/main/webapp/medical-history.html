@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical History — MediCore</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body data-page="medical-history">
+
+<nav class="navbar">
+<div class="container">
+
+<a href="index_1.html" class="brand">
+<svg viewBox="0 0 24 24">
+<path d="M2 12h4l2-7 4 14 3-10 2 3h5"/>
+</svg>
+MediCore
+</a>
+
+<button class="nav-toggle" onclick="toggleNav()">
+&#9776;
+</button>
+
+<div class="nav-links"></div>
+
+<div class="nav-cta">
+
+<span class="badge badge-ok" style="align-self:center">
+Patient :
+<span class="patient-name-placeholder">Guest</span>
+</span>
+
+<a href="LogoutServlet" class="btn btn-outline btn-sm">
+Logout
+</a>
+
+</div>
+
+</div>
+</nav>
+
+<div class="dash">
+
+<aside class="sidebar">
+
+<h3>Patient Menu</h3>
+
+<a href="patient-dashboard.html">Dashboard</a>
+
+<a href="appointment.html">Appointments</a>
+
+<a href="medical-history.html" class="active">
+Medical History
+</a>
+
+<a href="prescription.html">Prescriptions</a>
+
+<a href="pharmacy.html">Pharmacy</a>
+
+<a href="lab-test.html">Lab Tests</a>
+
+<a href="emergency.html">Emergency</a>
+
+<a href="feedback.html">Feedback</a>
+
+<h3>Account</h3>
+
+<a href="LogoutServlet">Logout</a>
+
+</aside>
+
+<main class="dash-main">
+
+<h1>Medical History</h1>
+
+<p>
+A record of your visits, diagnoses and vitals over time.
+</p>
+
+<div class="card card-pad">
+
+<table>
+
+<tr>
+<th>Date</th>
+<th>Doctor</th>
+<th>Diagnosis</th>
+<th>Notes</th>
+</tr>
+
+<tbody id="historyRows">
+
+<tr>
+<td colspan="4">
+Loading...
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</main>
+
+</div>
+
+<script src="script.js"></script>
+
+<script>
+      fetch("PatientInfoServlet")
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Failed to load patient info");
+      }
+      return response.text();
+    })
+    .then(name => {
+      document.querySelectorAll(".patient-name-placeholder").forEach(el => {
+        el.textContent = name;
+      });
+    })
+    .catch(error => {
+      console.error(error);
+      document.querySelectorAll(".patient-name-placeholder").forEach(el => {
+        el.textContent = "Guest";
+      });
+    });
+
+  fetch("MyMedicalHistoryServlet")
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Failed to load medical history");
+      }
+      return response.text();
+    })
+    .then(html => {
+      document.getElementById("historyRows").innerHTML = html;
+    })
+    .catch(error => {
+      console.error(error);
+      document.getElementById("historyRows").innerHTML =
+        "<tr><td colspan='4'>No medical history found.</td></tr>";
+    });
+
+</script>
+
+</body>
+</html>
